@@ -17,7 +17,7 @@ class Meals(Resource):
 			request_data = request.get_json()
 			# meal_data = request_data['MEAL_DATA']
 			food_ids  = request_data['food_ids']
-			path = '/var/www/html/meal-food/task1/meal_data.py'
+			path = '../task1/meal_data.py'
 
 			with open(path) as file:
 				data = json.load(file)
