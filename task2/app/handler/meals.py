@@ -3,6 +3,11 @@ from flask import request, jsonify, abort, redirect
 
 from app import flask_app
 from app import api
+import sys
+sys.path.append('../')
+from task1.solution import get_matching_meals
+from task1 import meal_data
+import json
 		
 
 class Meals(Resource):
@@ -10,25 +15,19 @@ class Meals(Resource):
 	def post(self):
 		try:
 			request_data = request.get_json()
-			meal_data = request_data['MEAL_DATA']
+			# meal_data = request_data['MEAL_DATA']
 			food_ids  = request_data['food_ids']
+			path = '/var/www/html/meal-food/task1/meal_data.py'
 
-			lst = []
-			if not meal_data or not food_ids:
-				response = jsonify(msg="Meal or food data missing(cannot be blank)", status=400)
-				response.status_code = 400
-				return response
+			with open(path) as file:
+				data = json.load(file)
+				meal_data_data = data
 
-			for y in meal_data:
-				food =[z['food_id'] for z in y['foods']]
-				if all(item in food for item in food_ids):
-					lst.append(y['meal_id'])
-
-			response = lst
-			if response:
+			response = get_matching_meals(meal_data_data, food_ids)
+			if isinstance(response, list):
 				return jsonify(data=response, status=200)
 			else:
-				response = jsonify(msg="No matching data found", status=400)
+				response = jsonify(msg=response, status=400)
 				response.status_code = 400
 				return response
 		except KeyError as e:
